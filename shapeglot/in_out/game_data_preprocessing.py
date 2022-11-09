@@ -27,8 +27,8 @@ except:
 
 # Version of pandas installed.
 PV = int(pd.__version__.split('.')[1][0])
-if PV not in [1, 2]:
-    raise ValueError('Not tested pandas version.')
+#if PV not in [1, 2]:
+#    raise ValueError('Not tested pandas version.')
 
 
 def preprocess_geometry(game_file, specific_sn_models=None):
