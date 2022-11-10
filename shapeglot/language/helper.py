@@ -76,7 +76,7 @@ def ints_to_sentences(words_as_ints, int_to_word, keep_special_syms=True, keep_a
 
 
 def token_ints_to_sentence(tokens, int_to_word):
-    text = [int_to_word[i] for i in tokens]
+    text = [int_to_word[i] for i in tokens] # gives error when calling "visualize_game_example", becuse tokens are already words
     text = ' '.join(text)
     stop = text.find(end_of_sentence_symbol)
     if stop == -1:
