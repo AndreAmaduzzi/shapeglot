@@ -27,6 +27,7 @@ except:
 
 # Version of pandas installed.
 PV = int(pd.__version__.split('.')[1][0])
+print('PV: ', PV)
 #if PV not in [1, 2]:
 #    raise ValueError('Not tested pandas version.')
 
@@ -123,6 +124,8 @@ def convert_words_to_int(game_data):
             game_data['text'][i] = new_sentence
         elif PV == 2:            
             game_data.at[i, 'text'] = new_sentence
+        elif PV == 5:
+            game_data.at[i, 'text'] = new_sentence
             
     return game_data, word_to_int
 
@@ -164,6 +167,8 @@ def replace_blacklisted_words(game_data, black_list, verbose=False):
         if PV == 1:
             game_data['text'][i] = new_sentence
         elif PV == 2:
+            game_data.at[i, 'text'] = new_sentence
+        elif PV == 5:
             game_data.at[i, 'text'] = new_sentence
 
         if not ok_sentence:
@@ -235,9 +240,11 @@ def convert_target_id_to_int(game_data, target_tag, geo_tags):
 
     for i, l in enumerate(all_locs):
         if PV == 1:
-            game_data[target_tag].loc[l] = i        
-        else:
+            game_data[target_tag].loc[l] = i
+        elif PV == 2:        
             game_data.at[l, target_tag] = i
+        elif PV == 5:
+           game_data.at[l, target_tag] = i 
 
 
 def group_dialogues(game_data, dia_symbol, game_col='game_id', trial_col='trial_num',
