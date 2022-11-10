@@ -34,11 +34,11 @@ class PretrainedFeatures(nn.Module):
         :param pre_drop: Boolean, if True it drops-out the pretrained feature before projection.
         :return: B x K x feat_dim
         """
-        x = self[index]
+        x = self[index]     # x size: ([2048, 3, 4096])
         assert x.ndim == 3
         res = []
         for i in range(x.shape[1]):
-            x_i = x[:, i]
+            x_i = x[:, i]   # x_i size: [2048, 4069]
             if pre_drop:
                 x_i = F.dropout(x_i, dropout_prob, self.training)
             x_i = F.relu(self.fc(x_i), inplace=True)
