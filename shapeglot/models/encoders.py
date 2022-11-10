@@ -68,7 +68,7 @@ class LanguageEncoder(nn.Module):
     def forward(self, padded_tokens, init_feats=None, drop_out_rate=0.5):
         w_emb = self.word_embedding(padded_tokens)
         w_emb = F.dropout(w_emb, drop_out_rate, self.training)
-        len_of_sequence = (padded_tokens != self.padding_idx).sum(dim=1)
+        len_of_sequence = (padded_tokens != self.padding_idx).sum(dim=1).cpu()
         x_packed = pack_padded_sequence(w_emb, len_of_sequence, enforce_sorted=False, batch_first=True)
 
         context_size = 1
