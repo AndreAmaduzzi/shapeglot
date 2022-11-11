@@ -58,6 +58,7 @@ def main():
 
     for split in ['train', 'val', 'test']:
         dataset = ShapeglotDataset(net_data[split])
+        print(f'split: {split}, dataset size: {len(dataset)}')
         dataloaders[split] = torch.utils.data.DataLoader(dataset=dataset,
                                                         batch_size=batch_size,
                                                         shuffle=split=='train',
@@ -101,8 +102,8 @@ def main():
                 tokens = tokens.to(device)              # tokens size: [B, 34]       
         
                 with torch.set_grad_enabled(phase == 'train'):
-                    logits = listener(context_ids, tokens)
-                    loss = smoothed_cross_entropy(logits, targets)                            
+                    logits = listener(context_ids, tokens)  # logits size: [B, 3] => prediction for each shape
+                    loss = smoothed_cross_entropy(logits, targets)                                
                     reg_loss = 0.0
                     
                     for p in visual_encoder.named_parameters():
