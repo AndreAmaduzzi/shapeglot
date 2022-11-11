@@ -8,7 +8,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
-
+from shapeglot.models.pointnet import Pointnet_encoder
 
 class PretrainedFeatures(nn.Module):
     """
@@ -48,6 +48,43 @@ class PretrainedFeatures(nn.Module):
         res = torch.stack(res, 1)
         return res
 
+class PointCloudEncoder(nn.Module):
+    """
+    pre-trained Point Cloud Encoder, followed by projection layers
+    """
+    def __init__(self, pointnet_path, embed_size):
+        super(PointCloudEncoder, self).__init__()
+        
+        # pre-trained PointNet encoder
+        self.pretrained_pointnet = Pointnet_encoder(feat_dims=1024)
+        ckpt = torch.load(pointnet_path)
+        self.pretrained_pointnet.load_state_dict(ckpt["model_state"])
+
+        # projection layers
+        self.fc = nn.Linear(self.pretrained_feats.shape[1], embed_size)
+        self.bn = nn.BatchNorm1d(embed_size)
+
+
+    def forward(self, x, dropout_prob=0.0, pre_drop=True):
+        """ Apply dropout-fc-relu-dropout and return the specified by the index features.
+        :param index: B x K
+        :param dropout_prob:
+        :param pre_drop: Boolean, if True it drops-out the pretrained feature before projection.
+        :return: B x K x feat_dim
+        """
+        # x input = 
+        assert x.ndim == 3
+        res = []
+        for i in range(x.shape[1]):
+            x_i = x[:, i]   # x_i size: [2048, 4069]
+            if pre_drop:
+                x_i = F.dropout(x_i, dropout_prob, self.training)
+            x_i = F.relu(self.fc(x_i), inplace=True)
+            x_i = self.bn(x_i)
+            x_i = F.dropout(x_i, dropout_prob, self.training)
+            res.append(x_i)
+        res = torch.stack(res, 1)
+        return res
 
 class LanguageEncoder(nn.Module):
     """
