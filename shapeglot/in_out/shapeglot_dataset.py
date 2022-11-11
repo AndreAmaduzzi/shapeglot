@@ -1,6 +1,25 @@
 import numpy as np
 from torch.utils.data import Dataset
 
+def shuffle_ids(ids, label, random_seed=None):
+    ''' e.g. if [a, b] with label 0 makes it [b, a] with label 1.
+    '''
+    res_ids = ids.copy()   # initialization of output list
+    if random_seed is not None:
+        np.random.seed(random_seed)
+    shuffle = np.random.shuffle
+    idx = [0, 1]
+    shuffle(idx)
+    # if idx==0, no swap
+    # if idx==1, swap elements of ids
+    i=0
+    for one_idx in idx:
+        res_ids[i] = ids[one_idx]
+        i += 1 
+
+    target = idx[0]
+
+    return res_ids, target
 
 
 class ShapeglotDataset(Dataset):
